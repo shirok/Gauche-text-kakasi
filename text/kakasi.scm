@@ -35,7 +35,7 @@
 ;; The lowest level APIs, kakasi-getopt-argv, kakasi-do and
 ;; kakasi-close-kanwadict is defined in kakasi.so
 
-(dynamic-load "kakasi")
+(dynamic-load "text--kakasi")
 
 ;;--------------------------------------------------------
 ;; High-level API

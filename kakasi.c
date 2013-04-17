@@ -1,8 +1,7 @@
 /*
- * Gauche-kakasi binding
+ * Gauche-text-kakasi binding
  *
  * Copyright (C) 2003  Shiro Kawai (shiro@acm.org)
- * $Id: kakasi.c,v 1.1.1.1 2003-01-14 04:40:43 shirok Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -20,10 +20,10 @@ ungzip+untar後、configure + make + make installで既にインストール
 としてインストールされます。
 
 kakasiライブラリが非標準の位置にインストールされている場合は、
-configureスクリプトに--with-kakasiオプションでそのディレクトリを
+configureスクリプトに--with-localオプションでそのディレクトリを
 教えて下さい。例えば
 
-  ./configure --with-kakasi=/usr/local
+  ./configure --with-local=/usr/local
 
 とすれば、libkakasi.hを/usr/local/includeから、libkakasi.soを
 /usr/local/libから探します。
