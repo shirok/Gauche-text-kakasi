@@ -1,0 +1,50 @@
+;;;
+;;; Gauche-kakasi  binding
+;;;
+;;; Copyright (C) 2003  Shiro Kawai (shiro@acm.org)
+;;; $Id: kakasilib.stub,v 1.1.1.1 2003-01-14 04:40:43 shirok Exp $
+;;;
+;;; This program is free software; you can redistribute it and/or modify
+;;; it under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either versions 2, or (at your option)
+;;; any later version.
+;;;
+;;; This program is distributed in the hope that it will be useful
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with KAKASI, see the file COPYING.  If not, write to the Free
+;;; Software Foundation Inc., 59 Temple Place - Suite 330, Boston, MA
+;;; 02111-1307, USA.
+
+"#include <libkakasi.h>"
+
+(define-cproc kakasi-getopt-argv (args)
+  "int argc = Scm_Length(args), i = 0, r;
+  char **argv;
+  ScmObj cp;
+  if (argc <= 1) Scm_Error(\"a list of at least one element is required, but got %S\", args);
+  argv = SCM_NEW2(char **, sizeof(char*)*argc);
+  SCM_FOR_EACH(cp, args) {
+    if (!SCM_STRINGP(SCM_CAR(cp))) {
+      Scm_Error(\"string required, but got %S\", SCM_CAR(cp));
+    }
+    argv[i++] = (char*)Scm_GetStringConst(SCM_STRING(SCM_CAR(cp)));
+  }
+  r = kakasi_getopt_argv(argc, argv);
+  SCM_RETURN(SCM_MAKE_INT(r));")
+
+(define-cproc kakasi-do (str::<string>)
+  "char *r = kakasi_do((char*)Scm_GetStringConst(str));
+  ScmObj sr = SCM_MAKE_STR_COPYING(r);
+  kakasi_free(r);
+  SCM_RETURN(sr);")
+
+(define-cproc kakasi-close-kanwadict ()
+  (return <fixnum> "kakasi_close_kanwadict"))
+
+;; Local variables:
+;; mode: scheme
+;; end:

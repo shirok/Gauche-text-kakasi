@@ -1,0 +1,34 @@
+#!/bin/sh
+VERSION=`cat VERSION`
+PACKAGE=kakasi
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    doc) docs=yes; shift ;;
+    tgz) tgz=yes; shift ;;
+    test) test=yes; shift ;;
+    testclean) testclean=yes; shift ;;
+    *) echo "DIST [doc][tgz][test][testclean]"; exit 0;;
+  esac
+done
+
+if [ "$tgz" = "yes" ]; then
+  if [ -f Makefile ]; then make maintainer-clean; fi
+  autoconf -I `gauche-config --ac`
+  ./configure
+  make distclean
+
+  if [ ! -f VERSION ]; then echo "No VERSION; something wrong?"; exit 1; fi
+  VERSION=`cat VERSION`
+
+  rm -f DIST_EXCLUDE_X
+  cat DIST_EXCLUDE > DIST_EXCLUDE_X
+  find . -name CVS -print -prune >> DIST_EXCLUDE_X
+
+  rm -rf ../Gauche-$PACKAGE-$VERSION
+
+  mkdir ../Gauche-$PACKAGE-$VERSION
+  tar cvfX - DIST_EXCLUDE_X . | (cd ../Gauche-$PACKAGE-$VERSION; tar xf -)
+  (cd ..; tar cvf - Gauche-$PACKAGE-$VERSION | gzip -9 > Gauche-$PACKAGE-$VERSION.tgz)
+fi
+

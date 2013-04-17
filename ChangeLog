@@ -1,0 +1,13 @@
+2004-08-14  Kimura Fuyuki  <fuyuki@hadaly.org>
+
+	* Makefile.in (LDFLAGS): Move @KAKASI_LIBDIR@ in front of
+	@LDFLAGS@ not to put any flags after `-o'.
+
+2004-08-02  Shiro Kawai  <shiro@acm.org>
+
+	* release 0.1
+
+2004-07-25  Shiro Kawai  <shiro@acm.org>
+
+	* fixed installation problem, and adapted to the new packaging scheme.
+

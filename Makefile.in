@@ -1,0 +1,84 @@
+#
+# $Id: Makefile.in,v 1.4 2004-08-14 00:15:22 fuyuki Exp $
+#
+
+SHELL       = @SHELL@
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+libdir      = @libdir@
+VPATH       = $(srcdir)
+
+# These may be overridden by make invocators
+DESTDIR  =
+OPTFLAGS = @OPTFLAGS@
+CC       = @CC@
+LIBS     = -lkakasi @LIBS@
+CFLAGS   = @CFLAGS@ @KAKASI_INCDIR@ $(OPTFLAGS)
+LDFLAGS  = @KAKASI_LIBDIR@ @LDFLAGS@
+INSTALL_TYPE = @INSTALL_TYPE@
+
+# Set by configure
+GOSH     = @GOSH@
+GAUCHE_CONFIG = @GAUCHE_CONFIG@
+OBJEXT   = @OBJEXT@
+DSOEXT   = @SOEXT@
+
+INSTALL  = @GAUCHE_INSTALL@
+
+MODULE   = kakasi
+
+ARCHFILES = $(MODULE).$(DSOEXT)
+SCMFILES  = text/$(MODULE).scm
+HEADERS   = 
+
+TARGET    = $(ARCHFILES)
+OBJS      = kakasi_head.$(OBJEXT) \
+            kakasi.$(OBJEXT)      \
+            kakasilib.$(OBJEXT)   \
+            kakasi_tail.$(OBJEXT)
+GENERATED = kakasilib.$(OBJEXT) kakasi_head.c kakasi_tail.c
+CONFIG_GENERATED = Makefile config.cache config.log config.status \
+		   configure.lineno autom4te*.cache Gauche-kakasi.gpd
+
+HEADER_INSTALL_DIR  = $(DESTDIR)`$(GAUCHE_CONFIG) --$(INSTALL_TYPE)incdir`
+SCM_INSTALL_DIR     = $(DESTDIR)`$(GAUCHE_CONFIG) --$(INSTALL_TYPE)libdir`
+ARCH_INSTALL_DIR    = $(DESTDIR)`$(GAUCHE_CONFIG) --$(INSTALL_TYPE)archdir`
+
+all : $(TARGET)
+
+.SUFFIXES: .o .stub
+
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.stub.c:
+	$(GOSH) genstub $<
+
+kakasilib.c : kakasilib.stub
+
+$(MODULE).$(DSOEXT): $(OBJS)
+	$(CC) -Wl,-rpath -Wl,`gauche-config --sysarchdir` $(LDFLAGS) $(MODULE).$(DSOEXT) $(OBJS) $(LIBS)
+
+$(MODULE)_head.c $(MODULE)_tail.c :
+	$(GAUCHE_CONFIG) --fixup-extension $(MODULE)
+
+check : all
+	@rm -f test.log
+	$(GOSH) -I. test.scm > test.log
+
+install : all
+	$(INSTALL) -m 444 -T $(HEADER_INSTALL_DIR) $(HEADERS)
+	$(INSTALL) -m 444 -T $(SCM_INSTALL_DIR) $(SCMFILES) 
+	$(INSTALL) -m 555 -T $(ARCH_INSTALL_DIR) $(ARCHFILES)
+	$(INSTALL) -m 444 -T $(SCM_INSTALL_DIR)/.packages Gauche-kakasi.gpd
+
+clean :
+	rm -rf core $(TARGET) $(OBJS) $(GENERATED) *~ test.log so_locations
+
+distclean : clean
+	rm -rf $(CONFIG_GENERATED)
+
+maintainer-clean : clean
+	rm -rf $(CONFIG_GENERATED) configure VERSION
+
