@@ -25,7 +25,7 @@
 
 extern void Scm_Init_kakasilib(ScmModule *);
 
-void Scm_Init_kakasi(void)
+void Scm_Init_text__kakasi(void)
 {
     ScmModule *mod;
     SCM_INIT_EXTENSION(kakasi);
