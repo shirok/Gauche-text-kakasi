@@ -23,7 +23,7 @@ EXEEXT = @EXEEXT@
 LOCAL_PATHS = "@LOCAL_PATHS@"
 
 # Module-specific stuff
-PACKAGE   = Gauche-kakasi
+PACKAGE   = Gauche-text-kakasi
 
 ARCHFILES = text--kakasi.$(SOEXT)
 SCMFILES  = $(srcdir)/text/kakasi.scm
