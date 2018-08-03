@@ -61,7 +61,7 @@ dnl Add your macro calls to check existence of programs, if you have any.
 
 dnl Check for libraries
 dnl Add your macro calls to check required libraries, if you have any.
-AC_CHECK_LIB(kakasi, kakasi_do,[AC_MSG_ERROR([cannot find libkakasi.  you may want to use --with-local=PATH option if you have installed Kakasi in a nonstandard directory.])])
+AC_CHECK_LIB(kakasi, kakasi_do, ,[AC_MSG_ERROR([cannot find libkakasi.  you may want to use --with-local=PATH option if you have installed Kakasi in a nonstandard directory.])])
 
 dnl Creating gpd (gauche package description) file
 GAUCHE_PACKAGE_CONFIGURE_ARGS="`echo ""$ac_configure_args"" | sed 's/[\\""\`\$]/\\\&/g'`"
