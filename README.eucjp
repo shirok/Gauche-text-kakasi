@@ -11,7 +11,7 @@ libkakasiがGPLで配布されているので、Gauche-kakasiもGPLとします。
 [必要なもの]
 
    kakasi (2.3.4 以降)
-   Gauche (0.8 以降）
+   Gauche (0.9.6 以降）
 
 [インストール]
 

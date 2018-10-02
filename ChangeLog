@@ -1,3 +1,8 @@
+2018-10-01  Shiro Kawai  <shiro@acm.org>
+
+	* Release 0.2
+	* Use gauche.configure instead of autoconf for the configure script.
+
 2013-04-16  Shiro Kawai  <shiro@acm.org>
 
 	* Migrated to git.  Updated build files.
