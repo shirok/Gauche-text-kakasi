@@ -1,0 +1,19 @@
+name: Build and test
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v3
+    - uses: shirok/setup-gauche@v1
+    - name: Install dependencies
+      run: |
+        sudo apt install -y libkakasi2-dev kakasi-dic
+    - name: Build and check
+      run: |
+        ./configure
+        make
+        make -s check
