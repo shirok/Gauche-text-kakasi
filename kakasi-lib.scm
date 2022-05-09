@@ -2,7 +2,6 @@
 ;;; Gauche-kakasi
 ;;;
 ;;; Copyright (C) 2003  Shiro Kawai (shiro@acm.org)
-;;; $Id: kakasi.scm,v 1.1.1.1 2003-01-14 04:40:45 shirok Exp $
 ;;;
 ;;; This program is free software; you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
@@ -32,10 +31,32 @@
   )
 (select-module text.kakasi)
 
-;; The lowest level APIs, kakasi-getopt-argv, kakasi-do and
-;; kakasi-close-kanwadict is defined in kakasi.so
+(inline-stub
+ (.include <libkakasi.h>)
+ (define-cproc kakasi-getopt-argv (args)
+   "int argc = Scm_Length(args), i = 0, r;
+  char **argv;
+  ScmObj cp;
+  if (argc <= 1) Scm_Error(\"a list of at least one element is required, but got %S\", args);
+  argv = SCM_NEW2(char **, sizeof(char*)*argc);
+  SCM_FOR_EACH(cp, args) {
+    if (!SCM_STRINGP(SCM_CAR(cp))) {
+      Scm_Error(\"string required, but got %S\", SCM_CAR(cp));
+    }
+    argv[i++] = (char*)Scm_GetStringConst(SCM_STRING(SCM_CAR(cp)));
+  }
+  r = kakasi_getopt_argv(argc, argv);
+  SCM_RETURN(SCM_MAKE_INT(r));")
 
-(dynamic-load "text--kakasi")
+ (define-cproc kakasi-do (str::<string>)
+   "char *r = kakasi_do((char*)Scm_GetStringConst(str));
+  ScmObj sr = SCM_MAKE_STR_COPYING(r);
+  kakasi_free(r);
+  SCM_RETURN(sr);")
+
+ (define-cproc kakasi-close-kanwadict () ::<fixnum>
+   kakasi_close_kanwadict)
+ )
 
 ;;--------------------------------------------------------
 ;; High-level API

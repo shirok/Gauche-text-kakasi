@@ -15,6 +15,7 @@ GOSH           = "@GOSH@"
 GAUCHE_CONFIG  = "@GAUCHE_CONFIG@"
 GAUCHE_PACKAGE = "@GAUCHE_PACKAGE@"
 INSTALL        = "@GAUCHE_INSTALL@" -C
+PRECOMP        = $(GOSH) precomp
 
 # Other parameters
 SOEXT  = @SOEXT@
@@ -26,11 +27,11 @@ LOCAL_PATHS = "@LOCAL_PATHS@"
 PACKAGE   = Gauche-text-kakasi
 
 ARCHFILES = text--kakasi.$(SOEXT)
-SCMFILES  = $(srcdir)/text/kakasi.scm
+SCMFILES  = text/kakasi.scm
 HEADERS   =
 
 TARGET    = $(ARCHFILES)
-GENERATED =
+GENERATED = text--kakasi.c text/kakasi.scm
 CONFIG_GENERATED = Makefile config.cache config.log config.status \
 		   configure.lineno autom4te*.cache $(PACKAGE).gpd
 
@@ -38,13 +39,13 @@ GAUCHE_PKGINCDIR  = "$(DESTDIR)@GAUCHE_PKGINCDIR@"
 GAUCHE_PKGLIBDIR  = "$(DESTDIR)@GAUCHE_PKGLIBDIR@"
 GAUCHE_PKGARCHDIR = "$(DESTDIR)@GAUCHE_PKGARCHDIR@"
 
-kakasi_SRCS = $(srcdir)/kakasi.c $(srcdir)/kakasilib.stub
-
 all : $(TARGET)
 
-text--kakasi.$(SOEXT): $(kakasi_SRCS)
+text--kakasi.$(SOEXT): $(srcdir)/kakasi-lib.scm
+	$(PRECOMP) --ext-module=text/kakasi.scm -o text--kakasi \
+	  $(srcdir)/kakasi-lib.scm
 	$(GAUCHE_PACKAGE) compile --libs=-lkakasi \
-	  --local=$(LOCAL_PATHS) --verbose text--kakasi $(kakasi_SRCS)
+	  --local=$(LOCAL_PATHS) --verbose text--kakasi text--kakasi.c
 
 check : all
 	@rm -f test.log
@@ -63,12 +64,11 @@ uninstall :
 	$(INSTALL) -U $(GAUCHE_PKGLIBDIR)/.packages $(PACKAGE).gpd
 
 clean :
-	$(GAUCHE_PACKAGE) compile --clean text--kakasi $(kakasi_SRCS)
-	rm -rf core $(TARGET) $(GENERATED) *~ test.log so_locations
+	$(GAUCHE_PACKAGE) compile --clean text--kakasi
+	rm -rf core $(TARGET) $(GENERATED) *~ test.log
 
 distclean : clean
 	rm -rf $(CONFIG_GENERATED)
 
 maintainer-clean : clean
 	rm -rf $(CONFIG_GENERATED) VERSION
-
