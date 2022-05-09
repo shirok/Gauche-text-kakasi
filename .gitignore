@@ -1,0 +1,6 @@
+Gauche-text-kakasi.gpd
+Makefile
+VERSION
+*.log
+*.so
+*.o
