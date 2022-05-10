@@ -105,7 +105,7 @@ Gauche-kakasiは、libkakasiのAPIと直接対応する低レベルAPIと、
 
      (kakasi-begin :JH)
      (kakasi-convert "結果を文字列で返します。")
-      => "けっかをもじれつでかえします"。
+      => "けっかをもじれつでかえします。"
      (kakasi-end)
 
      (kakasi-begin :w)
