@@ -1,6 +1,8 @@
 Gauche-text-kakasi.gpd
 Makefile
 VERSION
+text--kakasi.c
+text/kakasi.scm
 *.log
 *.so
 *.o
