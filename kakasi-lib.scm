@@ -33,26 +33,19 @@
 
 (inline-stub
  (.include <libkakasi.h>)
- (define-cproc kakasi-getopt-argv (args)
-   "int argc = Scm_Length(args), i = 0, r;
-  char **argv;
-  ScmObj cp;
-  if (argc <= 1) Scm_Error(\"a list of at least one element is required, but got %S\", args);
-  argv = SCM_NEW2(char **, sizeof(char*)*argc);
-  SCM_FOR_EACH(cp, args) {
-    if (!SCM_STRINGP(SCM_CAR(cp))) {
-      Scm_Error(\"string required, but got %S\", SCM_CAR(cp));
-    }
-    argv[i++] = (char*)Scm_GetStringConst(SCM_STRING(SCM_CAR(cp)));
-  }
-  r = kakasi_getopt_argv(argc, argv);
-  SCM_RETURN(SCM_MAKE_INT(r));")
+ (define-cproc kakasi-getopt-argv (args) ::<int>
+   (let* ([argc::int (Scm_Length args)])
+     (when (<= argc 1)
+       (Scm_Error "a list of at least two element is required, but got: %S"
+                  args))
+     (return (kakasi_getopt_argv argc (Scm_ListToCStringArray args TRUE NULL)))
+     ))
 
  (define-cproc kakasi-do (str::<string>)
-   "char *r = kakasi_do((char*)Scm_GetStringConst(str));
-  ScmObj sr = SCM_MAKE_STR_COPYING(r);
-  kakasi_free(r);
-  SCM_RETURN(sr);")
+   (let* ([r::char* (kakasi_do (cast char* (Scm_GetString str)))]
+          [sr (SCM_MAKE_STR_COPYING r)])
+     (kakasi_free r)
+     (return sr)))
 
  (define-cproc kakasi-close-kanwadict () ::<fixnum>
    kakasi_close_kanwadict)
@@ -91,30 +84,30 @@
 ;; Encoding stuff.
 (define-values (iconvert oconvert convopt)
   (case (gauche-character-encoding)
-    ((euc-jp) (values identity identity '("-ieuc" "-oeuc")))
-    ((sjis)   (values identity identity '("-isjis" "-osjis")))
-    ((utf-8)  (values (lambda (s) (ces-convert s "utf8" "euc_jp"))
-                      (lambda (s) (ces-convert s "euc_jp" "utf8"))
-                      '("-ieuc" "-oeuc")))
-    ((none)   (values identity identity '()))))
+    [(euc-jp) (values identity identity '("-ieuc" "-oeuc"))]
+    [(sjis)   (values identity identity '("-isjis" "-osjis"))]
+    [(utf-8)  (values (cut ces-convert <> "utf8" "euc_jp")
+                      (cut ces-convert <> "euc_jp" "utf8")
+                      '("-ieuc" "-oeuc"))]
+    [(none)   (values identity identity '())]))
 
 ;; option -> args
 (define (convert-args args)
-  (let loop ((args args)
-             (r '()))
-    (cond ((null? args) (append convopt (reverse r)))
-          ((keyword? (car args))
-           (loop (cdr args) (cons #`"-,(keyword->string (car args))" r)))
-          (else
-           (loop (cdr args) (cons (x->string (car args)) r))))))
+  (let loop ([args args]
+             [r '()])
+    (cond [(null? args) (append convopt (reverse r))]
+          [(keyword? (car args))
+           (loop (cdr args) (cons #`"-,(keyword->string (car args))" r))]
+          [else
+           (loop (cdr args) (cons (x->string (car args)) r))])))
 
 ;; see if two option sets are the same
 (define (options=? opt1 opt2)
   (define (opts&dicts opt) (span (cut string-prefix? "-" <>) opt))
   (and opt1
        opt2
-       (let-values (((opts1 dicts1) (opts&dicts opt1))
-                    ((opts2 dicts2) (opts&dicts opt2)))
+       (let-values ([(opts1 dicts1) (opts&dicts opt1)]
+                    [(opts2 dicts2) (opts&dicts opt2)])
          (and (lset= equal? opts1 opts2)
               (equal? dicts1 dicts2)))))
 
@@ -142,11 +135,11 @@
 
 (define-syntax with-kakasi
   (syntax-rules ()
-    ((_ opts . body)
+    [(_ opts . body)
      (dynamic-wind
-      (lambda () (kakasi-begin . opts))
-      (lambda () . body)
-      (lambda () (kakasi-end))))
+      (^[] (kakasi-begin . opts))
+      (^[] . body)
+      (^[] (kakasi-end)))]
     ))
 
 ;;--------------------------------------------------------
