@@ -104,7 +104,7 @@
              (r '()))
     (cond ((null? args) (append convopt (reverse r)))
           ((keyword? (car args))
-           (loop (cdr args) (cons #`"-,(car args)" r)))
+           (loop (cdr args) (cons #`"-,(keyword->string (car args))" r)))
           (else
            (loop (cdr args) (cons (x->string (car args)) r))))))
 
