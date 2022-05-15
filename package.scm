@@ -3,8 +3,8 @@
 ;;
 
 (define-gauche-package "Gauche-text-kakasi"
-  ;; 
-  :version "0.2"
+  ;;
+  :version "0.3_pre1"
 
   ;; Description of the package.  The first line is used as a short
   ;; summary.
@@ -12,11 +12,10 @@
                 http://kakasi.namazu.org/index.html.en."
 
   ;; List of dependencies.
-  :require (("Gauche" (>= "0.9.6")))
+  :require (("Gauche" (>= "0.9.11")))
 
   ;; List of providing modules
-  ;; NB: This will be recognized >= Gauche 0.9.7.
-  ;:providing-modules (text.kakasi)
+  :providing-modules (text.kakasi)
 
   ;; List name and contact info of authors.
   ;; e.g. ("Eva Lu Ator <eval@example.com>"
@@ -33,7 +32,7 @@
   :licenses ("GPL2")
 
   ;; Homepage URL, if any.
-  ; :homepage "http://example.com/Gauche-text-kakasi/"
+  :homepage "https://github.com/shirok/Gauche-text-kakasi"
 
   ;; Repository URL, e.g. github
   :repository "https://github.com/shirok/Gauche-text-kakasi.git"
